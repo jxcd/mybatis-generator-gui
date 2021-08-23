@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-	<jmxConfigurator />
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>[%level] [%date{HH:mm:ss.SSS}] [%thread] [%mdc] %logger.%method:%line --> %message%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
-		</filter>
-	</appender>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 路径 -->
+    <property name="LOG_PATH" value="logs"/>
+    <property name="FILE_NAME" value="mybatis-generator-gui"/>
+    <!-- 输出格式 -->
+    <property name="CONSOLE_PATTERN" value="[%-12d{HH:mm:ss.SSS}][%-5level][%-25thread][%-50class{50} :%-3L] %msg%n"/>
+    <property name="FILE_PATTERN" value="[%-12d{HH:mm:ss.SSS}][%-5level][%-25thread][%-50class{50} :%-3L] %msg%n"/>
 
-	<appender name="FILE"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>logs/mybatis-generator.%d{yyyy-MM-dd}.%i.log.zip
-			</fileNamePattern>
-			<maxHistory>7</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>500MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-		</rollingPolicy>
-		<encoder>
-			<pattern>[%level] [%date{HH:mm:ss.SSS}] [%thread] [%mdc] %logger.%method:%line --> %message%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
-		</filter>
-	</appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </encoder>
+    </appender>
 
-	<root level="DEBUG">
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-	</root>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_PATH}/history/${FILE_NAME}.%d{yyyyMMdd}.log.gz</FileNamePattern>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
 
 </configuration>
