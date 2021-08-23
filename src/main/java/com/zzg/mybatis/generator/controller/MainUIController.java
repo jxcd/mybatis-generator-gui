@@ -46,7 +46,10 @@ public class MainUIController extends BaseFXController {
 
     private static final Logger _LOG = LoggerFactory.getLogger(MainUIController.class);
     private static final String FOLDER_NO_EXIST = "部分目录不存在，是否创建";
+    @FXML
     public TextField packagePrefix;
+    @FXML
+    public ChoiceBox<String> enableService;
     // tool bar buttons
     @FXML
     private Label connectionLabel;
@@ -329,7 +332,7 @@ public class MainUIController extends BaseFXController {
         bridge.setDatabaseConfig(selectedDatabaseConfig);
         bridge.setIgnoredColumns(ignoredColumns);
         bridge.setColumnOverrides(columnOverrides);
-        UIProgressCallback alert = new UIProgressCallback(Alert.AlertType.INFORMATION);
+        UIProgressCallback alert = new UIProgressCallback(Alert.AlertType.INFORMATION, generatorConfig);
         bridge.setProgressCallback(alert);
         alert.show();
         PictureProcessStateController pictureProcessStateController = null;
@@ -455,6 +458,7 @@ public class MainUIController extends BaseFXController {
         generatorConfig.setUseDAOExtendStyle(useDAOExtendStyle.isSelected());
         generatorConfig.setUseSchemaPrefix(useSchemaPrefix.isSelected());
         generatorConfig.setJsr310Support(jsr310Support.isSelected());
+        generatorConfig.setEnableService(enableService.getValue());
         return generatorConfig;
     }
 

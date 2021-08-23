@@ -70,6 +70,16 @@ public class GeneratorConfig {
 
     private String packagePrefix;
 
+    private String enableService;
+
+	public String getEnableService() {
+		return enableService;
+	}
+
+	public void setEnableService(String enableService) {
+		this.enableService = enableService;
+	}
+
 	public String getPackagePrefix() {
 		return packagePrefix;
 	}

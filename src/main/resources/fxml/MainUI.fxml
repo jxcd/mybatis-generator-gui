@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import javafx.scene.shape.Box?>
 <BorderPane prefHeight="613.0" prefWidth="918.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/11.0.1"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.zzg.mybatis.generator.controller.MainUIController">
     <top>
@@ -244,6 +245,20 @@
                                                             <items>
                                                                 <FXCollections fx:factory="observableArrayList">
                                                                     <String fx:value="UTF-8"/>
+                                                                </FXCollections>
+                                                            </items>
+                                                        </ChoiceBox>
+                                                    </children>
+                                                    <Box width="20"/>
+                                                    <children>
+                                                        <Label text="service/manager"/>
+                                                        <ChoiceBox fx:id="enableService" prefHeight="23.0"
+                                                                   prefWidth="71.0" value="Manager">
+                                                            <items>
+                                                                <FXCollections fx:factory="observableArrayList">
+                                                                    <String fx:value="None"/>
+                                                                    <String fx:value="Service"/>
+                                                                    <String fx:value="Manager"/>
                                                                 </FXCollections>
                                                             </items>
                                                         </ChoiceBox>
