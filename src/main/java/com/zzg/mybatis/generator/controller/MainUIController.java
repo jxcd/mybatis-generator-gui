@@ -46,6 +46,7 @@ public class MainUIController extends BaseFXController {
 
     private static final Logger _LOG = LoggerFactory.getLogger(MainUIController.class);
     private static final String FOLDER_NO_EXIST = "部分目录不存在，是否创建";
+    public TextField packagePrefix;
     // tool bar buttons
     @FXML
     private Label connectionLabel;
@@ -380,7 +381,7 @@ public class MainUIController extends BaseFXController {
 		if (StringUtils.isEmpty(domainObjectNameField.getText()))  {
 			return "类名不能为空";
 		}
-		if (StringUtils.isAnyEmpty(modelTargetPackage.getText(), mapperTargetPackage.getText(), daoTargetPackage.getText())) {
+		if (StringUtils.isAnyEmpty(modelTargetPackage.getText()/*, mapperTargetPackage.getText()*/, daoTargetPackage.getText())) {
 			return "包名不能为空";
 		}
 
@@ -413,16 +414,29 @@ public class MainUIController extends BaseFXController {
     }
 
     public GeneratorConfig getGeneratorConfigFromUI() {
+        String packagePrefixText = packagePrefix.getText();
+        String modelPackage = packagePrefixText + "." + modelTargetPackage.getText();
+        String daoPackage = packagePrefixText + "." + daoTargetPackage.getText();
+        String daoTargetFolder = daoTargetProject.getText();
+        String xmlPackage = mapperTargetPackage.getText();
+        String xmlTargetFolder = mappingTargetProject.getText();
+        if (xmlPackage.isEmpty()) {
+            xmlPackage = daoPackage;
+        }
+        if (xmlTargetFolder.isEmpty()) {
+            xmlTargetFolder = daoTargetFolder;
+        }
+
         GeneratorConfig generatorConfig = new GeneratorConfig();
         generatorConfig.setProjectFolder(projectFolderField.getText());
-        generatorConfig.setModelPackage(modelTargetPackage.getText());
+        generatorConfig.setModelPackage(modelPackage);
         generatorConfig.setGenerateKeys(generateKeysField.getText());
         generatorConfig.setModelPackageTargetFolder(modelTargetProject.getText());
-        generatorConfig.setDaoPackage(daoTargetPackage.getText());
-        generatorConfig.setDaoTargetFolder(daoTargetProject.getText());
+        generatorConfig.setDaoPackage(daoPackage);
+        generatorConfig.setDaoTargetFolder(daoTargetFolder);
         generatorConfig.setMapperName(mapperName.getText());
-        generatorConfig.setMappingXMLPackage(mapperTargetPackage.getText());
-        generatorConfig.setMappingXMLTargetFolder(mappingTargetProject.getText());
+        generatorConfig.setMappingXMLPackage(xmlPackage);
+        generatorConfig.setMappingXMLTargetFolder(xmlTargetFolder);
         generatorConfig.setTableName(tableNameField.getText());
         generatorConfig.setDomainObjectName(domainObjectNameField.getText());
         generatorConfig.setOffsetLimit(offsetLimitCheckBox.isSelected());
