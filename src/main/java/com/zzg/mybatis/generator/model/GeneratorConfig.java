@@ -68,7 +68,17 @@ public class GeneratorConfig {
 
     private boolean jsr310Support;
 
-    public boolean isJsr310Support() {
+    private String packagePrefix;
+
+	public String getPackagePrefix() {
+		return packagePrefix;
+	}
+
+	public void setPackagePrefix(String packagePrefix) {
+		this.packagePrefix = packagePrefix;
+	}
+
+	public boolean isJsr310Support() {
         return jsr310Support;
     }
 

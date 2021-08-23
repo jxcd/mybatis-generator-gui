@@ -205,7 +205,7 @@ public class MainUIController extends BaseFXController {
                         this.tableName = tableName;
                         tableNameField.setText(tableName);
                         domainObjectNameField.setText(MyStringUtils.dbStringToCamelStyle(tableName));
-                        mapperName.setText(domainObjectNameField.getText().concat("DAO"));
+                        mapperName.setText(domainObjectNameField.getText().concat("Mapper"));
                     }
                 }
             });
@@ -428,6 +428,7 @@ public class MainUIController extends BaseFXController {
         }
 
         GeneratorConfig generatorConfig = new GeneratorConfig();
+        generatorConfig.setPackagePrefix(packagePrefixText);
         generatorConfig.setProjectFolder(projectFolderField.getText());
         generatorConfig.setModelPackage(modelPackage);
         generatorConfig.setGenerateKeys(generateKeysField.getText());
