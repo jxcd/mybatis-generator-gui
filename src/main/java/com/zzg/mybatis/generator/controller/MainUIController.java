@@ -427,30 +427,17 @@ public class MainUIController extends BaseFXController {
     }
 
     public GeneratorConfig getGeneratorConfigFromUI() {
-        String packagePrefixText = packagePrefix.getText();
-        String modelPackage = packagePrefixText + "." + modelTargetPackage.getText();
-        String daoPackage = packagePrefixText + "." + daoTargetPackage.getText();
-        String daoTargetFolder = daoTargetProject.getText();
-        String xmlPackage = mapperTargetPackage.getText();
-        String xmlTargetFolder = mappingTargetProject.getText();
-        if (xmlPackage.isEmpty()) {
-            xmlPackage = daoPackage;
-        }
-        if (xmlTargetFolder.isEmpty()) {
-            xmlTargetFolder = daoTargetFolder;
-        }
-
         GeneratorConfig generatorConfig = new GeneratorConfig();
-        generatorConfig.setPackagePrefix(packagePrefixText);
+        generatorConfig.setPackagePrefix(packagePrefix.getText());
         generatorConfig.setProjectFolder(projectFolderField.getText());
-        generatorConfig.setModelPackage(modelPackage);
+        generatorConfig.setModelPackage(modelTargetPackage.getText());
         generatorConfig.setGenerateKeys(generateKeysField.getText());
         generatorConfig.setModelPackageTargetFolder(modelTargetProject.getText());
-        generatorConfig.setDaoPackage(daoPackage);
-        generatorConfig.setDaoTargetFolder(daoTargetFolder);
+        generatorConfig.setDaoPackage(daoTargetPackage.getText());
+        generatorConfig.setDaoTargetFolder(daoTargetProject.getText());
         generatorConfig.setMapperName(mapperName.getText());
-        generatorConfig.setMappingXMLPackage(xmlPackage);
-        generatorConfig.setMappingXMLTargetFolder(xmlTargetFolder);
+        generatorConfig.setMappingXMLPackage(mapperTargetPackage.getText());
+        generatorConfig.setMappingXMLTargetFolder(mappingTargetProject.getText());
         generatorConfig.setTableName(tableNameField.getText());
         generatorConfig.setDomainObjectName(domainObjectNameField.getText());
         generatorConfig.setOffsetLimit(offsetLimitCheckBox.isSelected());
@@ -469,6 +456,7 @@ public class MainUIController extends BaseFXController {
         generatorConfig.setUseSchemaPrefix(useSchemaPrefix.isSelected());
         generatorConfig.setJsr310Support(jsr310Support.isSelected());
         generatorConfig.setEnableService(enableService.getValue());
+        generatorConfig.setTablePrefix(tablePrefix.getText());
         return generatorConfig;
     }
 
@@ -501,6 +489,10 @@ public class MainUIController extends BaseFXController {
         useDAOExtendStyle.setSelected(generatorConfig.isUseDAOExtendStyle());
         useSchemaPrefix.setSelected(generatorConfig.isUseSchemaPrefix());
         jsr310Support.setSelected(generatorConfig.isJsr310Support());
+
+        tablePrefix.setText(generatorConfig.getTablePrefix());
+        packagePrefix.setText(generatorConfig.getPackagePrefix());
+        enableService.setValue(generatorConfig.getEnableService());
     }
 
     @FXML

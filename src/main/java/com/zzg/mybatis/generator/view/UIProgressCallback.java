@@ -20,7 +20,7 @@ import java.util.Map;
 public class UIProgressCallback extends Alert implements ProgressCallback  {
     private static final Logger log = LoggerFactory.getLogger(UIProgressCallback.class);
 
-    private StringProperty progressText = new SimpleStringProperty();
+    private final StringProperty progressText = new SimpleStringProperty();
     private GeneratorConfig generatorConfig = null;
 
     public UIProgressCallback(AlertType alertType) {
@@ -105,7 +105,7 @@ public class UIProgressCallback extends Alert implements ProgressCallback  {
                 conf.getTemplate("ServiceTemplate.ftl").process(dataModel, serviceWrite);
                 log.info("{} 生成完成", suffixLow);
                 conf.getTemplate("ServiceImplTemplate.ftl").process(dataModel, implWrite);
-                log.info("{}} impl 生成完成", suffixLow);
+                log.info("{} impl 生成完成", suffixLow);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -114,7 +114,7 @@ public class UIProgressCallback extends Alert implements ProgressCallback  {
 
     private String getPk(GeneratorConfig generatorConfig) {
         String java = this.generatorConfig.getProjectFolder() + "/" + this.generatorConfig.getDaoTargetFolder() + "/";
-        String daoDir = generatorConfig.getDaoPackage().replace(".", "/");
+        String daoDir = (generatorConfig.getPackagePrefix() + "." + generatorConfig.getDaoPackage()).replace(".", "/");
         File mapper = new File(java + daoDir, generatorConfig.getDomainObjectName() + "Mapper.java");
         try {
             if (mapper.exists()) {

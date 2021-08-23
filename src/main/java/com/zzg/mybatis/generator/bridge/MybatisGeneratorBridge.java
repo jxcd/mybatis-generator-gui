@@ -147,19 +147,36 @@ public class MybatisGeneratorBridge {
         if(DbType.Oracle.name().equals(dbType)){
             jdbcConfig.getProperties().setProperty("remarksReporting", "true");
         }
+
+        String projectFolder = generatorConfig.getProjectFolder();
+        // 拼接前缀
+        String packagePrefix = generatorConfig.getPackagePrefix();
+        String modelPackage = packagePrefix + "." + generatorConfig.getModelPackage();
+        String daoPackage = packagePrefix + "." + generatorConfig.getDaoPackage();
+
+        String xmlPackage = generatorConfig.getMappingXMLPackage();
+        if (StringUtils.isBlank(xmlPackage)) {
+            xmlPackage = daoPackage;
+        }
+        String daoTargetFolder = generatorConfig.getDaoTargetFolder();
+        String xmlTargetFolder = generatorConfig.getMappingXMLTargetFolder();
+        if (StringUtils.isBlank(xmlTargetFolder)) {
+            xmlTargetFolder = daoTargetFolder;
+        }
+
         // java model
         JavaModelGeneratorConfiguration modelConfig = new JavaModelGeneratorConfiguration();
-        modelConfig.setTargetPackage(generatorConfig.getModelPackage());
-        modelConfig.setTargetProject(generatorConfig.getProjectFolder() + "/" + generatorConfig.getModelPackageTargetFolder());
+        modelConfig.setTargetPackage(modelPackage);
+        modelConfig.setTargetProject(projectFolder + "/" + generatorConfig.getModelPackageTargetFolder());
         // Mapper configuration
         SqlMapGeneratorConfiguration mapperConfig = new SqlMapGeneratorConfiguration();
-        mapperConfig.setTargetPackage(generatorConfig.getMappingXMLPackage());
-        mapperConfig.setTargetProject(generatorConfig.getProjectFolder() + "/" + generatorConfig.getMappingXMLTargetFolder());
+        mapperConfig.setTargetPackage(xmlPackage);
+        mapperConfig.setTargetProject(projectFolder + "/" + xmlTargetFolder);
         // DAO
         JavaClientGeneratorConfiguration daoConfig = new JavaClientGeneratorConfiguration();
         daoConfig.setConfigurationType("XMLMAPPER");
-        daoConfig.setTargetPackage(generatorConfig.getDaoPackage());
-        daoConfig.setTargetProject(generatorConfig.getProjectFolder() + "/" + generatorConfig.getDaoTargetFolder());
+        daoConfig.setTargetPackage(daoPackage);
+        daoConfig.setTargetProject(projectFolder + "/" + daoTargetFolder);
 
 
         context.setId("myid");

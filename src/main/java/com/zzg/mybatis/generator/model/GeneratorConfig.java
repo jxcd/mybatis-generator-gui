@@ -72,6 +72,16 @@ public class GeneratorConfig {
 
     private String enableService;
 
+    private String tablePrefix;
+
+	public String getTablePrefix() {
+		return tablePrefix;
+	}
+
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
+	}
+
 	public String getEnableService() {
 		return enableService;
 	}
