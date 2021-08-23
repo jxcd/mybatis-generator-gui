@@ -98,6 +98,13 @@
                                                 <Insets left="5.0" right="5.0"/>
                                             </GridPane.margin>
                                         </TextField>
+                                        <Label text="表名前缀" GridPane.columnIndex="2"/>
+                                        <TextField fx:id="tablePrefix" prefHeight="27.0" prefWidth="228.0"
+                                                   promptText="t_, ga_, ..." GridPane.columnIndex="3">
+                                            <GridPane.margin>
+                                                <Insets left="5.0" right="5.0"/>
+                                            </GridPane.margin>
+                                        </TextField>
                                         <Label text="Java实体类名" GridPane.rowIndex="1"/>
                                         <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.columnSpan="3"
                                               GridPane.rowIndex="1" GridPane.valignment="CENTER">

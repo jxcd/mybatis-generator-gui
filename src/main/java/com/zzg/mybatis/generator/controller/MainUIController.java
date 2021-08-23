@@ -50,6 +50,8 @@ public class MainUIController extends BaseFXController {
     public TextField packagePrefix;
     @FXML
     public ChoiceBox<String> enableService;
+    @FXML
+    public TextField tablePrefix;
     // tool bar buttons
     @FXML
     private Label connectionLabel;
@@ -207,6 +209,14 @@ public class MainUIController extends BaseFXController {
                         selectedDatabaseConfig = (DatabaseConfig) treeItem.getParent().getGraphic().getUserData();
                         this.tableName = tableName;
                         tableNameField.setText(tableName);
+                        String tablePrefixText = tablePrefix.getText();
+                        if (StringUtils.isNotBlank(tablePrefixText)) {
+                            for (String pre : tablePrefixText.split(", ")) {
+                                if (tableName.startsWith(pre)) {
+                                    tableName = tableName.substring(pre.length());
+                                }
+                            }
+                        }
                         domainObjectNameField.setText(MyStringUtils.dbStringToCamelStyle(tableName));
                         mapperName.setText(domainObjectNameField.getText().concat("Mapper"));
                     }
