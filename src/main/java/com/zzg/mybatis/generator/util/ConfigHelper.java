@@ -130,6 +130,8 @@ public class ConfigHelper {
 		}
 	}
 
+	public static String confName = "";
+
 	public static void saveGeneratorConfig(GeneratorConfig generatorConfig) throws Exception {
 		Connection conn = null;
 		Statement stat = null;
@@ -141,6 +143,7 @@ public class ConfigHelper {
 			String sql = String.format("INSERT INTO generator_config values('%s', '%s')", generatorConfig.getName(),
 					jsonStr);
 			stat.executeUpdate(sql);
+			confName = generatorConfig.getName();
 		} finally {
 			if (rs != null) rs.close();
 			if (stat != null) stat.close();
@@ -158,6 +161,7 @@ public class ConfigHelper {
 			String sql = String.format("SELECT * FROM generator_config where name='%s'", name);
 			_LOG.info("sql: {}", sql);
 			rs = stat.executeQuery(sql);
+			confName = name;
 			GeneratorConfig generatorConfig = null;
 			if (rs.next()) {
 				String value = rs.getString("value");
@@ -194,7 +198,7 @@ public class ConfigHelper {
 		}
 	}
 
-	public static int deleteGeneratorConfig(String name) throws Exception {
+	public static void deleteGeneratorConfig(String name) throws Exception {
 		Connection conn = null;
 		Statement stat = null;
 		try {
@@ -202,7 +206,8 @@ public class ConfigHelper {
 			stat = conn.createStatement();
 			String sql = String.format("DELETE FROM generator_config where name='%s'", name);
 			_LOG.info("sql: {}", sql);
-			return stat.executeUpdate(sql);
+			stat.executeUpdate(sql);
+			confName = name;
 		} finally {
 			if (stat != null) stat.close();
 			if (conn != null) conn.close();

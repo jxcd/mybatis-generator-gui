@@ -403,7 +403,7 @@ public class MainUIController extends BaseFXController {
 
 	@FXML
     public void saveGeneratorConfig() {
-        TextInputDialog dialog = new TextInputDialog("");
+        TextInputDialog dialog = new TextInputDialog(ConfigHelper.confName);
         dialog.setTitle("保存当前配置");
         dialog.setContentText("请输入配置名称");
         Optional<String> result = dialog.showAndWait();
