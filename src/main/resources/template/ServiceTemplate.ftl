@@ -5,7 +5,7 @@ import ${packagePrefix}.${modelTargetPackage}.${Model};
 import ${packagePrefix}.${modelTargetPackage}.${Model}Example;
 
 /**
-* @author auto generator
-*/
+ * @author ${author}
+ */
 public interface ${Model}${suffix} extends Base${suffix}<${Model}, ${PK}, ${Model}Example> {
 }

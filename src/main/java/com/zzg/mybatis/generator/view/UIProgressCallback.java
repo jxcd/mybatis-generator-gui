@@ -78,6 +78,7 @@ public class UIProgressCallback extends Alert implements ProgressCallback  {
             String packagePrefix = generatorConfig.getPackagePrefix();
             // 封装参数
             Map<String, String> dataModel = new LinkedHashMap<>();
+            dataModel.put("author", System.getProperty("author-name"));
             dataModel.put("packagePrefix", packagePrefix);
             dataModel.put("suffix", suffix);
             dataModel.put("suffixLow", suffixLow);

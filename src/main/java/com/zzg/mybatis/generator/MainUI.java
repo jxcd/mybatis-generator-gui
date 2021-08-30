@@ -24,6 +24,8 @@ public class MainUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		System.setProperty("author-name", "generator");
+
 		ConfigHelper.createEmptyFiles();
 		URL url = Thread.currentThread().getContextClassLoader().getResource("fxml/MainUI.fxml");
 		FXMLLoader fxmlLoader = new FXMLLoader(url);

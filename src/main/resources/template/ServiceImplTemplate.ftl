@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
-* @author auto generator
-*/
+ * @author ${author}
+ */
 @Service
 public class ${Model}${suffix}Impl extends Abstract${suffix}Impl<${Model}, ${PK}, ${Model}Example> implements ${Model}${suffix} {
 

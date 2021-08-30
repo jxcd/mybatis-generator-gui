@@ -54,6 +54,8 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
 			if (isUseExample()) {
 				mapperInterface.addJavaDocLine(" * " + "@param <E> The Example Class");
 			}
+            mapperInterface.addJavaDocLine(" *");
+            mapperInterface.addJavaDocLine(" * @author " + System.getProperty("author-name"));
             mapperInterface.addJavaDocLine(" */");
 
             FullyQualifiedJavaType daoBaseInterfaceJavaType = mapperInterface.getType();
@@ -98,6 +100,8 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
                                    IntrospectedTable introspectedTable) {
         interfaze.addJavaDocLine("/**");
         interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
+        interfaze.addJavaDocLine(" *");
+        interfaze.addJavaDocLine(" * @author " + System.getProperty("author-name"));
         interfaze.addJavaDocLine(" */");
 
         String daoSuperClass = interfaze.getType().getPackageName() + DEFAULT_DAO_SUPER_CLASS;

@@ -16,6 +16,7 @@
 
 package com.zzg.mybatis.generator.plugins;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.CommentGenerator;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -110,8 +111,12 @@ public class DbRemarksCommentGenerator implements CommentGenerator {
     public void addModelClassComment(TopLevelClass topLevelClass,
                                 IntrospectedTable introspectedTable) {
         topLevelClass.addJavaDocLine("/**");
-        topLevelClass.addJavaDocLine(" * @author ");
-        topLevelClass.addJavaDocLine(" * " + introspectedTable.getRemarks());
+        String remarks = introspectedTable.getRemarks();
+        if (StringUtils.isNotBlank(remarks)) {
+            topLevelClass.addJavaDocLine(" * " + remarks);
+            topLevelClass.addJavaDocLine(" *");
+        }
+        topLevelClass.addJavaDocLine(" * @author " + System.getProperty("author-name"));
         topLevelClass.addJavaDocLine(" */");
         if(isAnnotations) {
             topLevelClass.addAnnotation("@Table(name=\"" + introspectedTable.getFullyQualifiedTableNameAtRuntime() + "\")");
