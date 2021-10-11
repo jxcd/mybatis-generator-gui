@@ -58,9 +58,9 @@ public class MybatisGeneratorBridge {
         Configuration configuration = new Configuration();
         Context context = new Context(ModelType.CONDITIONAL);
         configuration.addContext(context);
-		
+
         context.addProperty("javaFileEncoding", "UTF-8");
-        
+
 		String dbType = selectedDatabaseConfig.getDbType();
 		String connectorLibPath = ConfigHelper.findConnectorLibPath(dbType);
 	    _LOG.info("connectorLibPath: {}", connectorLibPath);
@@ -157,11 +157,13 @@ public class MybatisGeneratorBridge {
         String xmlPackage = generatorConfig.getMappingXMLPackage();
         if (StringUtils.isBlank(xmlPackage)) {
             xmlPackage = daoPackage;
+            generatorConfig.setMappingXMLPackage(xmlPackage);
         }
         String daoTargetFolder = generatorConfig.getDaoTargetFolder();
         String xmlTargetFolder = generatorConfig.getMappingXMLTargetFolder();
         if (StringUtils.isBlank(xmlTargetFolder)) {
             xmlTargetFolder = daoTargetFolder;
+            generatorConfig.setMappingXMLTargetFolder(xmlTargetFolder);
         }
 
         // java model
