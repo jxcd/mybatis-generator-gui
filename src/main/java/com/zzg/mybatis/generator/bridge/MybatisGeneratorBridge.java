@@ -8,7 +8,15 @@ import com.zzg.mybatis.generator.model.GeneratorConfig;
 import com.zzg.mybatis.generator.plugins.DbRemarksCommentGenerator;
 import com.zzg.mybatis.generator.util.ConfigHelper;
 import com.zzg.mybatis.generator.util.DbUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.api.ProgressCallback;
 import org.mybatis.generator.api.ShellCallback;
@@ -18,10 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.FileWriter;
+import java.util.*;
 
 /**
  * The bridge between GUI and the mybatis generator. All the operation to  mybatis generator should proceed through this
@@ -279,14 +285,82 @@ public class MybatisGeneratorBridge {
         ShellCallback shellCallback = new DefaultShellCallback(true); // override=true
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
         // if overrideXML selected, delete oldXML ang generate new one
-		if (generatorConfig.isOverrideXML()) {
-			String mappingXMLFilePath = getMappingXMLFilePath(generatorConfig);
-			File mappingXMLFile = new File(mappingXMLFilePath);
-			if (mappingXMLFile.exists()) {
-				mappingXMLFile.delete();
-			}
-		}
+        List<Element> elements = null;
+        String xmlFilePath = getMappingXMLFilePath(generatorConfig);
+        if (generatorConfig.isOverrideXML()) {
+			File mappingXMLFile = new File(xmlFilePath);
+            if (mappingXMLFile.exists()) {
+                // 读取历史的xml
+                elements = customizeElement(xmlFilePath);
+                mappingXMLFile.delete();
+            }
+        }
         myBatisGenerator.generate(progressCallback, contexts, fullyqualifiedTables);
+
+        // 修改生成的xml
+        appendCustomize(xmlFilePath, elements);
+    }
+
+    /**
+     * 默认标签集合
+     */
+    private final Map<String ,List<String>> defaultTags = new LinkedHashMap<>();
+
+    {
+        defaultTags.computeIfAbsent("resultMap", k -> new LinkedList<>()).add("BaseResultMap");
+        defaultTags.computeIfAbsent("sql", k -> new LinkedList<>()).add("Example_Where_Clause");
+        defaultTags.computeIfAbsent("sql", k -> new LinkedList<>()).add("Update_By_Example_Where_Clause");
+        defaultTags.computeIfAbsent("sql", k -> new LinkedList<>()).add("Base_Column_List");
+        defaultTags.computeIfAbsent("select", k -> new LinkedList<>()).add("selectByExample");
+        defaultTags.computeIfAbsent("select", k -> new LinkedList<>()).add("selectByPrimaryKey");
+        defaultTags.computeIfAbsent("delete", k -> new LinkedList<>()).add("deleteByPrimaryKey");
+        defaultTags.computeIfAbsent("delete", k -> new LinkedList<>()).add("deleteByExample");
+        defaultTags.computeIfAbsent("insert", k -> new LinkedList<>()).add("insert");
+        defaultTags.computeIfAbsent("insert", k -> new LinkedList<>()).add("insertSelective");
+        defaultTags.computeIfAbsent("select", k -> new LinkedList<>()).add("countByExample");
+        defaultTags.computeIfAbsent("update", k -> new LinkedList<>()).add("updateByExampleSelective");
+        defaultTags.computeIfAbsent("update", k -> new LinkedList<>()).add("updateByExample");
+        defaultTags.computeIfAbsent("update", k -> new LinkedList<>()).add("updateByPrimaryKeySelective");
+        defaultTags.computeIfAbsent("update", k -> new LinkedList<>()).add("updateByPrimaryKey");
+    }
+
+    private List<Element> customizeElement(String path) throws DocumentException {
+        List<Element> elements = new LinkedList<>();
+
+        SAXReader saxReader = new SAXReader();
+        Document document = saxReader.read(path);
+        Element root = document.getRootElement();
+        for (Element element : root.elements()) {
+            // _LOG.info("{} id: {}", element.getName(), element.attributeValue("id"));
+            // System.out.printf("defaultTags.computeIfAbsent(\"%s\", k -> new LinkedList<>()).add(\"%s\");%n", element.getName(), element.attributeValue("id"));
+            List<String> idList = defaultTags.get(element.getName());
+            if (idList == null || !idList.contains(element.attributeValue("id"))) {
+                // 有自定义标签
+                elements.add(element);
+            }
+        }
+        return elements;
+    }
+
+    private void appendCustomize(String xmlFilePath, List<Element> elements) throws Exception {
+        SAXReader saxReader = new SAXReader();
+        Document document = saxReader.read(xmlFilePath);
+        if (CollectionUtils.isNotEmpty(elements)) {
+            _LOG.info("{} has {} customize element", xmlFilePath, elements.size());
+            Element root = document.getRootElement();
+            for (Element element : elements) {
+                root.add((Element) element.clone());
+                _LOG.info("<{} id=\"{}\"></{}>", element.getName(), element.attributeValue("id"), element.getName());
+            }
+        }
+
+        // OutputFormat format = new OutputFormat("  ", false, "utf-8");
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        try (FileWriter fileWriter = new FileWriter(xmlFilePath)) {
+            XMLWriter xmlWriter = new XMLWriter(fileWriter, format);
+            xmlWriter.write(document);
+            xmlWriter.close();
+        }
     }
 
     private String getMappingXMLFilePath(GeneratorConfig generatorConfig) {
