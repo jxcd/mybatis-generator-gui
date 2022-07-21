@@ -1,6 +1,7 @@
 package com.zzg.mybatis.generator.view;
 
 import com.zzg.mybatis.generator.model.GeneratorConfig;
+import freemarker.template.Configuration;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Alert;
@@ -96,10 +97,10 @@ public class UIProgressCallback extends Alert implements ProgressCallback  {
                 throw new RuntimeException(e);
             }
             String encoding = this.generatorConfig.getEncoding();
-            try (Writer serviceWrite = new OutputStreamWriter(new FileOutputStream(service), Charset.forName(encoding));
-                 Writer implWrite = new OutputStreamWriter(new FileOutputStream(impl), Charset.forName(encoding))) {
+            try (Writer serviceWrite = new OutputStreamWriter(Files.newOutputStream(service.toPath()), Charset.forName(encoding));
+                 Writer implWrite = new OutputStreamWriter(Files.newOutputStream(impl.toPath()), Charset.forName(encoding))) {
 
-                freemarker.template.Configuration conf = new freemarker.template.Configuration(freemarker.template.Configuration.getVersion());
+                freemarker.template.Configuration conf = new freemarker.template.Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
                 conf.setClassForTemplateLoading(this.getClass(), "/template/");
                 conf.setDefaultEncoding(encoding);
 
