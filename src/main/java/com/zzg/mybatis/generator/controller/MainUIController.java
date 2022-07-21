@@ -25,7 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mybatis.generator.config.ColumnOverride;
@@ -35,7 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLRecoverableException;
 import java.util.ArrayList;
 import java.util.List;
@@ -551,8 +554,11 @@ public class MainUIController extends BaseFXController {
 				if (ButtonType.OK == optional.get()) {
 					try {
 						for (String dir : dirs) {
-							FileUtils.forceMkdir(new File(dir));
-						}
+                            final Path path = Files.createDirectories(Paths.get(dir));
+                            if (!Files.exists(path)) {
+                                throw new IOException("error create dir: " + dir);
+                            }
+                        }
 						return true;
 					} catch (Exception e) {
 						AlertUtil.showErrorAlert("创建目录失败，请检查目录是否是文件而非目录");
