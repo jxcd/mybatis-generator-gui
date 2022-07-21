@@ -7,16 +7,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.internal.util.JavaBeansUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 定制列配置UI Controller
@@ -84,8 +85,8 @@ public class TableColumnConfigsController extends BaseFXController {
 			Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 
 			ObservableList<UITableColumnVO> items = columnListView.getItems();
-			if (CollectionUtils.isNotEmpty(items)) {
-				items.stream().forEach(item -> {
+			if (items != null && !items.isEmpty()) {
+				items.forEach(item -> {
 					String  columnName = item.getColumnName();
 					Matcher matcher    = pattern.matcher(columnName);
 					if (matcher.find()) {
@@ -95,7 +96,9 @@ public class TableColumnConfigsController extends BaseFXController {
 							String propertyName = JavaBeansUtil.getCamelCaseString(regexColumnName, false);
 							_LOG.debug("table:{} column_name:{} regex_column_name:{} property_name:{}", tableName, columnName, regexColumnName, propertyName);
 
-							if (StringUtils.isNotBlank(propertyName)) item.setPropertyName(propertyName);
+							if (StringUtils.isNotBlank(propertyName)) {
+								item.setPropertyName(propertyName);
+							}
 						} else {
 							_LOG.warn("table:{} column_name:{} regex_column_name is blank", tableName, columnName);
 						}

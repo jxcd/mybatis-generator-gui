@@ -25,10 +25,10 @@ public class RepositoryPlugin extends PluginAdapter {
         return true;
     }
 
-    @Override
-    public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-        interfaze.addImportedType(annotationRepository);
-        interfaze.addAnnotation(annotation);
-        return true;
-    }
+    // @Override
+    // public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+    //     interfaze.addImportedType(annotationRepository);
+    //     interfaze.addAnnotation(annotation);
+    //     return true;
+    // }
 }

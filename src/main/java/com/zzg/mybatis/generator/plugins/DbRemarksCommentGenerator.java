@@ -22,6 +22,7 @@ import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.*;
 import org.mybatis.generator.api.dom.xml.XmlElement;
+import org.mybatis.generator.config.GeneratedKey;
 import org.mybatis.generator.internal.util.StringUtility;
 
 import java.util.Properties;
@@ -153,13 +154,13 @@ public class DbRemarksCommentGenerator implements CommentGenerator {
                 field.addAnnotation("@NotEmpty");
             }
             if (introspectedColumn.isIdentity()) {
-                if (introspectedTable.getTableConfiguration().getGeneratedKey().getRuntimeSqlStatement().equals("JDBC")) {
+                if (introspectedTable.getTableConfiguration().getGeneratedKey().map(GeneratedKey::getRuntimeSqlStatement).filter("JDBC"::equals).isPresent()) {
                     field.addAnnotation("@GeneratedValue(generator = \"JDBC\")");
                 } else {
                     field.addAnnotation("@GeneratedValue(strategy = GenerationType.IDENTITY)");
                 }
             } else if (introspectedColumn.isSequenceColumn()) {
-                field.addAnnotation("@SequenceGenerator(name=\"\",sequenceName=\"" + introspectedTable.getTableConfiguration().getGeneratedKey().getRuntimeSqlStatement() + "\")");
+                field.addAnnotation("@SequenceGenerator(name=\"\",sequenceName=\"" + introspectedTable.getTableConfiguration().getGeneratedKey().map(GeneratedKey::getRuntimeSqlStatement).orElse("") + "\")");
             }
         }
     }
