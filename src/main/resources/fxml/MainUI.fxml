@@ -275,7 +275,7 @@
                                                       GridPane.columnSpan="3" GridPane.rowIndex="8">
                                                     <children>
                                                         <CheckBox fx:id="useExample" minWidth="100.0" selected="true"
-                                                                  mnemonicParsing="false" text="使用Example"/>
+                                                                  mnemonicParsing="false" text="使用Example" disable="true"/>
                                                         <CheckBox fx:id="offsetLimitCheckBox" disable="true"
                                                                   minWidth="100.0" mnemonicParsing="false"
                                                                   selected="true" text="分页插件(暂时只支持MySQL和PostgreSQL)"

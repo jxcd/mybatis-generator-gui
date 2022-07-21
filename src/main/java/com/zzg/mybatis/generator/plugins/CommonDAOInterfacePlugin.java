@@ -2,6 +2,7 @@ package com.zzg.mybatis.generator.plugins;
 
 import org.mybatis.generator.api.*;
 import org.mybatis.generator.api.dom.java.*;
+import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.exception.ShellException;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
@@ -30,7 +31,7 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
     }
     
     private boolean isUseExample() {
-    	return "true".equals(context.getProperty("useExample"));
+    	return true;
 	}
 
     @Override
@@ -94,47 +95,46 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
         return mapperJavaFiles;
     }
 
-    // @Override
-    // public boolean clientGenerated(Interface interfaze,
-    //                                TopLevelClass topLevelClass,
-    //                                IntrospectedTable introspectedTable) {
-    //     interfaze.addJavaDocLine("/**");
-    //     interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
-    //     interfaze.addJavaDocLine(" *");
-    //     interfaze.addJavaDocLine(" * @author " + System.getProperty("author-name"));
-    //     interfaze.addJavaDocLine(" */");
-    //
-    //     String daoSuperClass = interfaze.getType().getPackageName() + DEFAULT_DAO_SUPER_CLASS;
-    //     FullyQualifiedJavaType daoSuperType = new FullyQualifiedJavaType(daoSuperClass);
-    //
-    //     String targetPackage = introspectedTable.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
-    //
-    //     String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
-    //     FullyQualifiedJavaType baseModelJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName);
-    //     daoSuperType.addTypeArgument(baseModelJavaType);
-    //
-    //     FullyQualifiedJavaType primaryKeyTypeJavaType = null;
-    //     if (introspectedTable.getPrimaryKeyColumns().size() > 1) {
-    //         primaryKeyTypeJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName + "Key");
-    //     }else if(introspectedTable.hasPrimaryKeyColumns()){
-    //         primaryKeyTypeJavaType = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType();
-    //     }else {
-    //         primaryKeyTypeJavaType = baseModelJavaType;
-    //     }
-    //     daoSuperType.addTypeArgument(primaryKeyTypeJavaType);
-	// 	interfaze.addImportedType(primaryKeyTypeJavaType);
-    //
-	// 	if (isUseExample()) {
-	// 		String exampleType = introspectedTable.getExampleType();
-	// 		FullyQualifiedJavaType exampleTypeJavaType = new FullyQualifiedJavaType(exampleType);
-	// 		daoSuperType.addTypeArgument(exampleTypeJavaType);
-	// 		interfaze.addImportedType(exampleTypeJavaType);
-	// 	}
-    //     interfaze.addImportedType(baseModelJavaType);
-    //     interfaze.addImportedType(daoSuperType);
-    //     interfaze.addSuperInterface(daoSuperType);
-    //     return true;
-    // }
+    @Override
+    public boolean clientGenerated(Interface interfaze,
+                                   IntrospectedTable introspectedTable) {
+        interfaze.addJavaDocLine("/**");
+        interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
+        interfaze.addJavaDocLine(" *");
+        interfaze.addJavaDocLine(" * @author " + System.getProperty("author-name"));
+        interfaze.addJavaDocLine(" */");
+
+        String daoSuperClass = interfaze.getType().getPackageName() + DEFAULT_DAO_SUPER_CLASS;
+        FullyQualifiedJavaType daoSuperType = new FullyQualifiedJavaType(daoSuperClass);
+
+        String targetPackage = introspectedTable.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
+
+        String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        FullyQualifiedJavaType baseModelJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName);
+        daoSuperType.addTypeArgument(baseModelJavaType);
+
+        FullyQualifiedJavaType primaryKeyTypeJavaType = null;
+        if (introspectedTable.getPrimaryKeyColumns().size() > 1) {
+            primaryKeyTypeJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName + "Key");
+        }else if(introspectedTable.hasPrimaryKeyColumns()){
+            primaryKeyTypeJavaType = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType();
+        }else {
+            primaryKeyTypeJavaType = baseModelJavaType;
+        }
+        daoSuperType.addTypeArgument(primaryKeyTypeJavaType);
+		interfaze.addImportedType(primaryKeyTypeJavaType);
+
+		if (isUseExample()) {
+			String exampleType = introspectedTable.getExampleType();
+			FullyQualifiedJavaType exampleTypeJavaType = new FullyQualifiedJavaType(exampleType);
+			daoSuperType.addTypeArgument(exampleTypeJavaType);
+			interfaze.addImportedType(exampleTypeJavaType);
+		}
+        interfaze.addImportedType(baseModelJavaType);
+        interfaze.addImportedType(daoSuperType);
+        interfaze.addSuperInterface(daoSuperType);
+        return true;
+    }
 
     @Override
     public boolean validate(List<String> list) {
@@ -277,21 +277,21 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
         return false;
     }
 
-    // @Override
-    // public boolean clientUpdateByExampleWithoutBLOBsMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-    //     if (isUseExample()) {
-	// 		interceptModelAndExampleParam(method);
-	// 	}
-    //     return false;
-    // }
-    //
-    // @Override
-    // public boolean clientUpdateByExampleSelectiveMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-    //     if (isUseExample()) {
-	// 		interceptModelAndExampleParam(method);
-	// 	}
-    //     return false;
-    // }
+    @Override
+    public boolean providerUpdateByExampleSelectiveMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        if (isUseExample()) {
+            interceptModelAndExampleParam(method);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean sqlMapUpdateByExampleWithBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
+        if (isUseExample()) {
+            interceptModelAndExampleParam(new Method(element.getName()));
+        }
+        return false;
+    }
 
     @Override
     public boolean clientUpdateByPrimaryKeyWithBLOBsMethodGenerated(Method method,
