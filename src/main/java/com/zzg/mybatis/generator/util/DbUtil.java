@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -28,11 +27,11 @@ public class DbUtil {
     private static final Logger _LOG = LoggerFactory.getLogger(DbUtil.class);
     private static final int DB_CONNECTION_TIMEOUTS_SECONDS = 1;
 
-    private static Map<DbType, Driver> drivers = new HashMap<>();
+    private static final Map<DbType, Driver> drivers = new HashMap<>();
 
-	private static ExecutorService executorService = Executors.newSingleThreadExecutor();
-	private static volatile boolean portForwaring = false;
-	private static Map<Integer, Session> portForwardingSession = new ConcurrentHashMap<>();
+	private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private static volatile boolean portForwarding = false;
+	private static final Map<Integer, Session> portForwardingSession = new ConcurrentHashMap<>();
 
     public static Session getSSHSession(DatabaseConfig databaseConfig) {
 		if (StringUtils.isBlank(databaseConfig.getSshHost())
@@ -86,7 +85,7 @@ public class DbUtil {
 					sshSession.connect();
 					assinged_port.set(sshSession.setPortForwardingL(lport, config.getHost(), rport));
 					portForwardingSession.put(lport, sshSession);
-					portForwaring = true;
+					portForwarding = true;
 					_LOG.info("portForwarding Enabled, {}", assinged_port);
 				} catch (JSchException e) {
 					_LOG.error("Connect Over SSH failed", e);
@@ -114,7 +113,7 @@ public class DbUtil {
 	}
 
 	public static void shutdownPortForwarding(Session session) {
-		portForwaring = false;
+		portForwarding = false;
 		if (session != null && session.isConnected()) {
 			session.disconnect();
 			_LOG.info("portForwarding turn OFF");
@@ -122,7 +121,7 @@ public class DbUtil {
 //		executorService.shutdown();
 	}
 
-    public static Connection getConnection(DatabaseConfig config) throws ClassNotFoundException, SQLException {
+    public static Connection getConnection(DatabaseConfig config) throws SQLException {
 		DbType dbType = DbType.valueOf(config.getDbType());
 		if (drivers.get(dbType) == null){
 			loadDbDriver(dbType);
@@ -169,7 +168,7 @@ public class DbUtil {
 				tables.add(rs.getString(3));
 			}
 			if (StringUtils.isNotBlank(filter)) {
-				tables.removeIf(x -> !x.contains(filter) && !(x.replaceAll("_", "").contains(filter)));;
+				tables.removeIf(x -> !x.contains(filter) && !(x.replaceAll("_", "").contains(filter)));
 			}
 			if (tables.size() > 1) {
 				Collections.sort(tables);
@@ -185,29 +184,27 @@ public class DbUtil {
         _LOG.info("getTableColumns, connection url: {}", url);
 		Session sshSession = getSSHSession(dbConfig);
 		engagePortForwarding(sshSession, dbConfig);
-		Connection conn = getConnection(dbConfig);
-		try {
-			DatabaseMetaData md = conn.getMetaData();
-			ResultSet rs = md.getColumns(dbConfig.getSchema(), null, tableName, null);
-			List<UITableColumnVO> columns = new ArrayList<>();
-			while (rs.next()) {
-				UITableColumnVO columnVO = new UITableColumnVO();
-				String columnName = rs.getString("COLUMN_NAME");
-				columnVO.setColumnName(columnName);
-				columnVO.setJdbcType(rs.getString("TYPE_NAME"));
-				columns.add(columnVO);
-			}
-			return columns;
-		} finally {
-			conn.close();
-			shutdownPortForwarding(sshSession);
-		}
+        try (Connection conn = getConnection(dbConfig)) {
+            DatabaseMetaData md = conn.getMetaData();
+            ResultSet rs = md.getColumns(dbConfig.getSchema(), null, tableName, null);
+            List<UITableColumnVO> columns = new ArrayList<>();
+            while (rs.next()) {
+                UITableColumnVO columnVO = new UITableColumnVO();
+                String columnName = rs.getString("COLUMN_NAME");
+                columnVO.setColumnName(columnName);
+                columnVO.setJdbcType(rs.getString("TYPE_NAME"));
+                columns.add(columnVO);
+            }
+            return columns;
+        } finally {
+            shutdownPortForwarding(sshSession);
+        }
 	}
 
-    public static String getConnectionUrlWithSchema(DatabaseConfig dbConfig) throws ClassNotFoundException {
+    public static String getConnectionUrlWithSchema(DatabaseConfig dbConfig) {
 		DbType dbType = DbType.valueOf(dbConfig.getDbType());
 		String connectionUrl = String.format(dbType.getConnectionUrlPattern(),
-				portForwaring ? "127.0.0.1" : dbConfig.getHost(), portForwaring ? dbConfig.getLport() : dbConfig.getPort(), dbConfig.getSchema(), dbConfig.getEncoding());
+				portForwarding ? "127.0.0.1" : dbConfig.getHost(), portForwarding ? dbConfig.getLport() : dbConfig.getPort(), dbConfig.getSchema(), dbConfig.getEncoding());
         _LOG.info("getConnectionUrlWithSchema, connection url: {}", connectionUrl);
         return connectionUrl;
     }
@@ -220,8 +217,8 @@ public class DbUtil {
 		List<String> driverJars = ConfigHelper.getAllJDBCDriverJarPaths();
 		ClassLoader classloader = ClassloaderUtility.getCustomClassloader(driverJars);
 		try {
-			Class clazz = Class.forName(dbType.getDriverClass(), true, classloader);
-			Driver driver = (Driver) clazz.newInstance();
+			Class<?> clazz = Class.forName(dbType.getDriverClass(), true, classloader);
+			Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
 			_LOG.info("load driver class: {}", driver);
 			drivers.put(dbType, driver);
 		} catch (Exception e) {

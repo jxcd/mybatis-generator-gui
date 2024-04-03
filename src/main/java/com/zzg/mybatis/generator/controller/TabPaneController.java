@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  * @author github.com/slankka on 2019/1/22.
  */
 public class TabPaneController extends BaseFXController {
-    private static Logger logger = LoggerFactory.getLogger(TabPaneController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TabPaneController.class);
 
     @FXML
     private TabPane tabPane;
@@ -34,8 +34,6 @@ public class TabPaneController extends BaseFXController {
     private OverSshController tabControlBController;
 
     private boolean isOverssh;
-
-    private MainUIController mainUIController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -49,7 +47,6 @@ public class TabPaneController extends BaseFXController {
     }
 
     public void setMainUIController(MainUIController mainUIController) {
-        this.mainUIController = mainUIController;
         this.tabControlAController.setMainUIController(mainUIController);
         this.tabControlAController.setTabPaneController(this);
         this.tabControlBController.setMainUIController(mainUIController);
@@ -110,7 +107,7 @@ public class TabPaneController extends BaseFXController {
             pictureProcessState.setDialogStage(getDialogStage());
             pictureProcessState.startPlay();
             //如果不用异步，则视图会等方法返回才会显示
-            Task task = new Task<Void>() {
+            Task<Void> task = new Task<>() {
                 @Override
                 protected Void call() throws Exception {
                     DbUtil.engagePortForwarding(sshSession, config);
