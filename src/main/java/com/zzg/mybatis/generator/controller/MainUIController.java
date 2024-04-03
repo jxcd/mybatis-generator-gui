@@ -1,6 +1,7 @@
 package com.zzg.mybatis.generator.controller;
 
 import com.jcraft.jsch.Session;
+import com.zzg.mybatis.generator.MainUI;
 import com.zzg.mybatis.generator.bridge.MybatisGeneratorBridge;
 import com.zzg.mybatis.generator.model.DatabaseConfig;
 import com.zzg.mybatis.generator.model.GeneratorConfig;
@@ -10,6 +11,7 @@ import com.zzg.mybatis.generator.util.DbUtil;
 import com.zzg.mybatis.generator.util.MyStringUtils;
 import com.zzg.mybatis.generator.view.AlertUtil;
 import com.zzg.mybatis.generator.view.UIProgressCallback;
+import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -32,7 +34,6 @@ import org.mybatis.generator.config.IgnoredColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -576,7 +577,7 @@ public class MainUIController extends BaseFXController {
         GeneratorConfig generatorConfig = getGeneratorConfigFromUI();
         String projectFolder = generatorConfig.getProjectFolder();
         try {
-            Desktop.getDesktop().browse(new File(projectFolder).toURI());
+            MainUI.hostServices.showDocument(String.valueOf(new File(projectFolder).toURI()));
         }catch (Exception e) {
             AlertUtil.showErrorAlert("打开目录失败，请检查目录是否填写正确" + e.getMessage());
         }

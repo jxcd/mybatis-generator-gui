@@ -3,6 +3,7 @@ package com.zzg.mybatis.generator;
 import com.zzg.mybatis.generator.controller.MainUIController;
 import com.zzg.mybatis.generator.util.ConfigHelper;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,7 +12,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.net.URL;
 
 /**
@@ -21,10 +21,12 @@ import java.net.URL;
 public class MainUI extends Application {
 
 	private static final Logger _LOG = LoggerFactory.getLogger(MainUI.class);
+	public static HostServices hostServices;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.setProperty("author-name", "generator");
+		hostServices = getHostServices();
 
 		ConfigHelper.createEmptyFiles();
 		URL url = Thread.currentThread().getContextClassLoader().getResource("fxml/MainUI.fxml");
@@ -40,9 +42,4 @@ public class MainUI extends Application {
 		MainUIController controller = fxmlLoader.getController();
 		controller.setPrimaryStage(primaryStage);
 	}
-
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 }

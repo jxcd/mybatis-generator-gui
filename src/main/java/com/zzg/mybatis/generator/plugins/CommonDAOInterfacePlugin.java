@@ -97,6 +97,7 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
 
     @Override
     public boolean clientGenerated(Interface interfaze,
+                                   TopLevelClass topLevelClass,
                                    IntrospectedTable introspectedTable) {
         interfaze.addJavaDocLine("/**");
         interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
