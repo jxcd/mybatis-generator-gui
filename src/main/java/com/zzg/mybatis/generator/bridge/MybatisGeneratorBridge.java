@@ -1,11 +1,10 @@
 package com.zzg.mybatis.generator.bridge;
 
-import com.jcraft.jsch.Session;
-import com.zzg.mybatis.generator.controller.PictureProcessStateController;
 import com.zzg.mybatis.generator.model.DatabaseConfig;
 import com.zzg.mybatis.generator.model.DbType;
 import com.zzg.mybatis.generator.model.GeneratorConfig;
 import com.zzg.mybatis.generator.plugins.DbRemarksCommentGenerator;
+import com.zzg.mybatis.generator.plugins.JavaTypeResolverImpl;
 import com.zzg.mybatis.generator.util.ConfigHelper;
 import com.zzg.mybatis.generator.util.DbUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -235,11 +234,11 @@ public class MybatisGeneratorBridge {
             }
         }
         //for JSR310
-        if (generatorConfig.isJsr310Support()) {
-            JavaTypeResolverConfiguration javaTypeResolverConfiguration = new JavaTypeResolverConfiguration();
-            javaTypeResolverConfiguration.setConfigurationType("com.zzg.mybatis.generator.plugins.JavaTypeResolverJsr310Impl");
-            context.setJavaTypeResolverConfiguration(javaTypeResolverConfiguration);
-        }
+        JavaTypeResolverImpl.jsr310 = generatorConfig.isJsr310Support();
+        JavaTypeResolverConfiguration javaTypeResolverConfiguration = new JavaTypeResolverConfiguration();
+        javaTypeResolverConfiguration.setConfigurationType("com.zzg.mybatis.generator.plugins.JavaTypeResolverImpl");
+        context.setJavaTypeResolverConfiguration(javaTypeResolverConfiguration);
+
         //forUpdate 插件
         if(generatorConfig.isNeedForUpdate()) {
             if (DbType.MySQL.name().equals(dbType)
